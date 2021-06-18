@@ -3,25 +3,26 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@color/teal_200">
 
     <ImageView
         android:id="@+id/profileImage"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:gravity="start"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"/>
-
-
+        style="@android:style/ButtonBar"
+        android:layout_marginTop="10dp"/>
 
     <TextView
         android:id="@+id/fullname"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:gravity="start"
         android:textColor="@android:color/black"
-        android:textSize="15sp"/>
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"/>
 
     <TextView
         android:id="@+id/city"
@@ -29,7 +30,7 @@
         android:layout_height="20dp"
         android:gravity="start"
         android:textColor="@android:color/black"
-        android:textSize="15sp"/>
+        android:textSize="18sp"/>
 
 
     <TextView
@@ -38,7 +39,7 @@
         android:layout_height="20dp"
         android:gravity="start"
         android:textColor="@android:color/black"
-        android:textSize="15sp"/>
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/phone"
@@ -46,7 +47,7 @@
         android:layout_height="20dp"
         android:gravity="start"
         android:textColor="@android:color/black"
-        android:textSize="15sp"/>
+        android:textSize="18sp"/>
 
 
 </LinearLayout>

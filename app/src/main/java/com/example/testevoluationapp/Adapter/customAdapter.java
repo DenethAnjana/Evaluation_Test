@@ -19,14 +19,15 @@ public class customAdapter extends BaseAdapter {
     Context context;
     ArrayList<testModel> arrayList;
 
-
-    public customAdapter(MainActivity mainActivity, ArrayList<testModel> arrayList) {
+    public customAdapter(Context context, ArrayList<testModel> arrayList) {
+        this.context = context;
+        this.arrayList = arrayList;
     }
 
 
     @Override
     public int getCount() {
-        return 0;
+        return arrayList.size();
     }
 
     @Override
@@ -56,10 +57,11 @@ public class customAdapter extends BaseAdapter {
         phone = (TextView) convertView.findViewById(R.id.phone);
 
 
-        fullName.setText(arrayList.get(position).getFullname());
-        city.setText(arrayList.get(position).getCity());
-        email.setText(arrayList.get(position).getEmail());
-        phone.setText(arrayList.get(position).getPhone());
+       // profileImage.setImageResource(arrayList.get(position).getProfileImage());
+        fullName.setText("Full Name : " +arrayList.get(position).getFullname());
+        city.setText("City : " + arrayList.get(position).getCity());
+        email.setText("Email : " + arrayList.get(position).getEmail());
+        phone.setText("Phone Number : " + arrayList.get(position).getPhone());
 
         return convertView;
     }

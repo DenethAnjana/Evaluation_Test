@@ -4,12 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.JsonReader;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testevoluationapp.Adapter.customAdapter;
@@ -29,15 +33,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
 
-    ListView lv_data, lv_user;
+    ListView lv_data;
     ArrayList<testModel> arrayList;
     SwipeRefreshLayout swipeRefresh;
 
     DBOperations dbOperations;
-    private Object DBOperations;
+
 
 
     @Override
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         lv_data = findViewById(R.id.lv_data);
         swipeRefresh = findViewById(R.id.swipeRefresh);
 
+        dbOperations = new DBOperations(this);
+        dbOperations.getWritableDatabase();
 
         arrayList = new ArrayList<>();
         new fetchData().execute();
@@ -71,11 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            //arrayList.clear();
+            arrayList.clear();
             String result = null;
 
             try {
-                URL url = new URL("https://randomuser.me/api/");
+                URL url = new URL("https://randomuser.me/api/?inc=name,location,email,phone,picture");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
 
@@ -97,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            System.out.println("Test" + result);
+           // System.out.println("Test" + result);
 
             return result;
 
@@ -107,46 +113,39 @@ public class MainActivity extends AppCompatActivity {
         public void onPostExecute(String s) {
             super .onPostExecute(s);
             swipeRefresh.setRefreshing(false);
+
             try {
                 JSONObject object = new JSONObject(s);
-                JSONArray array = object.getJSONArray("results");
+                JSONArray array = object.optJSONArray("results");
 
                 for (int i = 0; i < array.length(); i++) {
 
-                    JSONObject jsonObject = array.getJSONObject(i);
+                    JSONObject jsonObject = array.optJSONObject(i);
 
 
+                    String uImage = jsonObject.optString("picture");
                     String uName = jsonObject.optString("name");
-                    String uCity = jsonObject.optString("city");
+                    String uCity = jsonObject.optString("location");
                     String uEmail = jsonObject.optString("email");
                     String uPhone = jsonObject.optString("phone");
 
                     testModel model = new testModel();
 
+                    model.setProfileImage(uImage);
                     model.setFullname(uName);
                     model.setCity(uCity);
                     model.setEmail(uEmail);
                     model.setPhone(uPhone);
                     arrayList.add(model);
 
+                    dbOperations.insertData(uName, uCity, uEmail, uPhone);
+
 
                     System.out.println("FullName :  " + uName);
                     System.out.println("City :  " + uCity);
                     System.out.println("Email :  " + uEmail);
                     System.out.println("Phone  :  " + uPhone);
-                    DBOperations dbHelper = new DBOperations(MainActivity.this);
 
-                    dbHelper.insertData(uName, uCity, uEmail, uPhone);
-                    Toast.makeText(getApplicationContext(), "Details Saved Successfully", Toast.LENGTH_SHORT).show();
-
-
-                    DBOperations = new DBOperations(MainActivity.this);
-
-                    ArrayList<HashMap<String, String>> userList = dbOperations.GetUsers();
-
-                    @SuppressLint("ResourceType") ListAdapter adapter = new SimpleAdapter(MainActivity.this,userList, R.id.lv_data ,new String[]{"FULLNAME","CITY","EMAIL","PHONE"},
-                            new int[]{R.id.lname, R.id.lcity, R.id.lemail, R.id.lphone});
-                    lv_data.setAdapter(adapter);
 
                 }
 
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             customAdapter adapter = new customAdapter(MainActivity.this, arrayList);
-            //lv_data.setAdapter(adapter);
+            lv_data.setAdapter(adapter);
 
         }
 
