@@ -122,26 +122,38 @@ public class MainActivity extends AppCompatActivity{
 
                     JSONObject jsonObject = array.optJSONObject(i);
 
+                    JSONObject jtitle = array.getJSONObject(i);
+                    JSONObject title = jtitle.getJSONObject("name");
+                    String utitle = title.optString("title");
 
-                    String uImage = jsonObject.optString("picture");
-                    String uName = jsonObject.optString("name");
-                    String uCity = jsonObject.optString("location");
+                    JSONObject jfirst = array.getJSONObject(i);
+                    JSONObject first = jtitle.getJSONObject("name");
+                    String ufirst = first.optString("first");
+
+                    JSONObject jolast = array.getJSONObject(i);
+                    JSONObject last = jtitle.getJSONObject("name");
+                    String ulast = last.optString("last");
+
+                    JSONObject jcity = array.getJSONObject(i);
+                    JSONObject location = jcity.getJSONObject("location");
+                    String uCity= location.optString("city");
+
                     String uEmail = jsonObject.optString("email");
                     String uPhone = jsonObject.optString("phone");
 
+                    String uFullname = utitle +" " + ufirst+ " " + ulast;
                     testModel model = new testModel();
 
-                    model.setProfileImage(uImage);
-                    model.setFullname(uName);
+                    model.setFullname(uFullname);
                     model.setCity(uCity);
                     model.setEmail(uEmail);
                     model.setPhone(uPhone);
                     arrayList.add(model);
 
-                    dbOperations.insertData(uName, uCity, uEmail, uPhone);
+                    dbOperations.insertData(uFullname, uCity, uEmail, uPhone);
 
 
-                    System.out.println("FullName :  " + uName);
+                    System.out.println("FullName :  " + uFullname);
                     System.out.println("City :  " + uCity);
                     System.out.println("Email :  " + uEmail);
                     System.out.println("Phone  :  " + uPhone);
