@@ -19,7 +19,7 @@ public class DBOperations extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String tableUser ="create table Users( fullname text,city text, email text, phone text)";
+        String tableUser ="create table Users(fullname text,city text, email text, phone text, picture text)";
         db.execSQL(tableUser);
     }
 
@@ -27,7 +27,7 @@ public class DBOperations extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public void insertData(String fullname,String city, String email, String phone)
+    public void insertData(String fullname,String city, String email, String phone, String picture)
     {
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues values=new ContentValues();
@@ -35,7 +35,15 @@ public class DBOperations extends SQLiteOpenHelper {
         values.put("city",city);
         values.put("email",email);
         values.put("phone",phone);
+        values.put("picture",picture);
+
         sqLiteDatabase.insert("Users",null,values);
+    }
+
+    public Cursor getAllData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM Users", null);
+        return res;
     }
 
     public ArrayList fetchData()
@@ -50,6 +58,7 @@ public class DBOperations extends SQLiteOpenHelper {
                 stringArrayList.add(cursor.getString(0));
                 stringArrayList.add(cursor.getString(1));
                 stringArrayList.add(cursor.getString(2));
+                stringArrayList.add(cursor.getString(3));
             } while (cursor.moveToNext());
         }
         return stringArrayList;

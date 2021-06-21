@@ -1,15 +1,24 @@
 package com.example.testevoluationapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.JsonReader;
+import android.view.ContextMenu;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -35,14 +44,14 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
 
-
     ListView lv_data;
+    Button data;
+    WebView dp;
+    TextView link;
     ArrayList<testModel> arrayList;
     SwipeRefreshLayout swipeRefresh;
 
     DBOperations dbOperations;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +59,10 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         lv_data = findViewById(R.id.lv_data);
+        data = findViewById(R.id.btnData);
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        dp = findViewById(R.id.dp);
+        link = findViewById(R.id.profileImage);
 
         dbOperations = new DBOperations(this);
         dbOperations.getWritableDatabase();
@@ -141,23 +153,41 @@ public class MainActivity extends AppCompatActivity{
                     String uEmail = jsonObject.optString("email");
                     String uPhone = jsonObject.optString("phone");
 
-                    String uFullname = utitle +" " + ufirst+ " " + ulast;
+
+                    JSONObject jimg = array.getJSONObject(i);
+                    JSONObject img = jcity.getJSONObject("picture");
+                    String uPicture= img.optString("large");
+
+                    String uFullname = utitle +". " + ufirst+ " " + ulast;
+
+
                     testModel model = new testModel();
 
                     model.setFullname(uFullname);
                     model.setCity(uCity);
                     model.setEmail(uEmail);
                     model.setPhone(uPhone);
+                    model.setProfileImage(uPicture);
+
+
                     arrayList.add(model);
 
-                    dbOperations.insertData(uFullname, uCity, uEmail, uPhone);
+                    dbOperations.insertData(uFullname, uCity, uEmail, uPhone,uPicture);
+                    Toast.makeText(MainActivity.this,"Data Inserted To Sqlite Database",Toast.LENGTH_LONG).show();
 
 
                     System.out.println("FullName :  " + uFullname);
                     System.out.println("City :  " + uCity);
                     System.out.println("Email :  " + uEmail);
                     System.out.println("Phone  :  " + uPhone);
+                    System.out.println("Image  :  " + uPicture);
 
+                    String strUrl = uPicture.toString();
+
+                    if(strUrl.length()>0)
+                        dp.loadUrl(strUrl);
+                    else
+                        Toast.makeText(MainActivity.this,"No dp",Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -168,10 +198,41 @@ public class MainActivity extends AppCompatActivity{
             customAdapter adapter = new customAdapter(MainActivity.this, arrayList);
             lv_data.setAdapter(adapter);
 
-        }
 
+            data.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Cursor res = dbOperations.getAllData();
+                    if(res.getCount() == 0){
+                        showMessage("Error", "Nothing found");
+                        return;
+                    }
+                    StringBuffer buffer = new StringBuffer();
+                    while (res.moveToNext()){
+                        buffer.append("Full Name : "+res.getString(0)+"\n");
+                        buffer.append("City            : "+res.getString(1)+"\n");
+                        buffer.append("Email         : "+res.getString(2)+"\n");
+                        buffer.append("Phone        : "+res.getString(3)+"\n");
+                        buffer.append("Picture       : "+res.getString(4)+"\n\n\n");
+
+
+                    }
+                    showMessage("Users Table" , buffer.toString());
+                }
+            });
+        }
     }
 
+    private void showMessage(String title, String Message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.create();
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(Message);
+        builder.setIcon(R.drawable.usr);
+        builder.show();
+    }
 
 
 }

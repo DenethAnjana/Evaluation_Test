@@ -3,6 +3,8 @@ package com.example.testevoluationapp.model;
 
 public class testModel {
 
+
+    String ID;
     String fullname;
     String city;
     String email;
@@ -10,6 +12,13 @@ public class testModel {
     String profileImage;
 
 
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
 
     public String getPhone() {
         return Phone;
